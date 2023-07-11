@@ -108,3 +108,7 @@ function escapeHTML(str) {
         }[tag] || tag)
     );
 }
+
+function selectContact(id){
+    $("#main").attr("class", "main is-visible");
+}
