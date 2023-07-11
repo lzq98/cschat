@@ -48,9 +48,28 @@ function showNewText(text, timestamp, inner) {
     $messageInner.append($messageBody);
 
     var $messageFooter = $('<div class="message-footer"></div>');
-    $messageFooter.append($('<span class="extra-small text-muted">' + timestamp + '</span>'));
+    var time = new Date(timestamp);
+    var now = new Date();
+    timeString = "";
+    if (time.getFullYear() == now.getFullYear()) {
+        // same year as today
+        if (time.getMonth() == now.getMonth() && time.getDate() == now.getDate()) {
+            // today
+            // display time
+            timeString = time.getHours() + ":" + time.getMinutes();
+        } else {
+            // not the same date as today
+            // display date
+            timeString = (time.getMonth() + 1) + '-' + time.getDate();
+        }
+    } else {
+        // different year as today
+        // display year and date
+        timeString = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate();
+    }
+    $messageFooter.append($('<span class="extra-small text-muted">' + timeString + '</span>'));
     $messageInner.append($messageFooter);
-    
+
 
     $newMessage.append($messageInner);
     $("#chatbox").append($newMessage);
