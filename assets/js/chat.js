@@ -3,7 +3,20 @@ var myKey = cryptico.generateRSAKey("mypassword", 1024);
 var publicKey = cryptico.publicKeyString(myKey);
 
 // onClick send button
-$("#sendMessageButton").on("click", function () {
+$("#sendMessageButton").on("click", function (event) {
+    event.preventDefault();
+    sendMessage();
+});
+
+$("#myMessage").on("keydown", function (event) {
+    var keyCode = event.keyCode || event.which;
+    if (keyCode == 13) {
+        event.preventDefault();
+        sendMessage();
+    }
+});
+
+function sendMessage(){
     var plaintext = $.trim(document.getElementById("myMessage").value);
     if (plaintext != "") {
         showNewText(plaintext, new Date(), 0);//0 for send, 1 for receive
@@ -11,10 +24,11 @@ $("#sendMessageButton").on("click", function () {
         //upload(ciphertext, timestamp);
         //alert(ciphertext);
         $("#myMessage").val("");
+        document.getElementById("myMessage").style.height = "47px";
     } else {
         alert("no input");
     }
-});
+}
 
 function encryptMessage(plaintext) {
     var ciphertext = cryptico.encrypt(plaintext, publicKey);
