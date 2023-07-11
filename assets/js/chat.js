@@ -26,6 +26,9 @@ function encryptMessage(plaintext) {
 }
 
 function showNewText(text, timestamp, inner) {
+    // XSS protection when display text
+    text = escapeHTML(text);
+
     var $newMessage = $('<div"></div>');
     $newMessage.attr('class', inner ? 'message' : 'message message-out');
 
@@ -76,4 +79,18 @@ function showNewText(text, timestamp, inner) {
 
     // scroll to the bottom
     chatbody.scroll({ top: chatbody.scrollHeight, behavior: 'smooth' });
+}
+
+function escapeHTML(str) {
+    return str.replace(
+        /[&<>'"]/g,
+        tag =>
+        ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
 }
