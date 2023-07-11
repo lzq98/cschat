@@ -6,8 +6,7 @@ var publicKey = cryptico.publicKeyString(myKey);
 $("#sendMessageButton").on("click", function () {
     var plaintext = $.trim(document.getElementById("myMessage").value);
     if (plaintext != "") {
-        var timestamp = new Date();
-        //showMessage(0, plaintext, timestamp);//0 for me, 1 for the contact
+        showNewText(plaintext, new Date(), 0);//0 for send, 1 for receive
         var ciphertext = encryptMessage(plaintext);
         //upload(ciphertext, timestamp);
         //alert(ciphertext);
