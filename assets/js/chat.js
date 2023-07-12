@@ -1,6 +1,10 @@
-// initialize RSA keys
-var myKey = cryptico.generateRSAKey("mypassword", 1024);
-var publicKey = cryptico.publicKeyString(myKey);
+$(document).ready(function () {
+    // initialize variables
+    myinfo = JSON.parse(localStorage.getItem('info'));
+    mykey = deserializeRSAKey(localStorage.getItem('key'));
+    // getChatList();
+    getFriendList();
+});
 
 // onClick send button
 $("#sendMessageButton").on("click", function (event) {
@@ -71,7 +75,20 @@ function showNewText(text, timestamp, inner) {
     $messageInner.append($messageBody);
 
     var $messageFooter = $('<div class="message-footer"></div>');
-    var time = new Date(timestamp);
+    timeString = timeToString(timestamp);
+    $messageFooter.append($('<span class="extra-small text-muted">' + timeString + '</span>'));
+    $messageInner.append($messageFooter);
+
+
+    $newMessage.append($messageInner);
+    $("#chatbox").append($newMessage);
+    var chatbody = document.getElementById("chatbody");
+
+    // scroll to the bottom
+    chatbody.scroll({ top: chatbody.scrollHeight, behavior: 'smooth' });
+}
+
+function timeToString(time) {
     var now = new Date();
     timeString = "";
     if (time.getFullYear() == now.getFullYear()) {
@@ -90,16 +107,57 @@ function showNewText(text, timestamp, inner) {
         // display year and date
         timeString = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate();
     }
-    $messageFooter.append($('<span class="extra-small text-muted">' + timeString + '</span>'));
-    $messageInner.append($messageFooter);
+    return timeString;
+}
 
+function showChat(chat) {
+    var $card = $('<a href="#" class="card border-0 text-reset" onclick="selectContact(this.id);"></a>');
+    $card.attr('id', 'c' + chat["relationid"]);
+    var $cardBody = $('<div class="card-body"></div>');
+    var $row = $('<div class="row gx-5"></div>');
+    var $avatarCol = $('<div class="col-auto"></div>');
+    var $avatar = $('<div class="avatar"></div>');
+    var $avatarimg;
+    if (true) {
+        $avatarimg = $('<span class="avatar-text">M</span>');
+    } else {
+        $avatarimg = $('<img alt="#" class="avatar-img">');
+        //$avatarimg.attr('src', contactinfo['avatar']);
+    }
+    $avatar.append($avatarimg);
+    $avatarCol.append($avatar);
+    $row.append($avatarCol);
 
-    $newMessage.append($messageInner);
-    $("#chatbox").append($newMessage);
-    var chatbody = document.getElementById("chatbody");
+    var $infoCol = $('<div class="col"></div>');
+    var $contactInfo = $('<div class="d-flex align-items-center mb-3"></div>');
+    var $name = $('<h5 class="me-auto mb-0">' + "name" + '</h5>');
+    var $time = $('<span class="text-muted extra-small ms-2 last-chat-time">' + timeToString(new Date(parseInt(chat['time']))) + '</span>')
+    $contactInfo.append($name);
+    $contactInfo.append($time);
+    var $message = $('<div class="d-flex align-items-center"> \
+            <div class="line-clamp me-auto last-chat-message">'+ chat['message'] + ' \
+            </div> \
+            <div class="badge badge-circle bg-primary ms-5 unread"> \
+                <span class="unread-count"></span> \
+            </div> \
+        </div > '
+    );
+    $infoCol.append($contactInfo);
+    $infoCol.append($message);
+    $row.append($infoCol);
+    $cardBody.append($row);
+    $card.append($cardBody);
+    $('#chatlist').append($card);
+}
 
-    // scroll to the bottom
-    chatbody.scroll({ top: chatbody.scrollHeight, behavior: 'smooth' });
+function getFriendList() {
+    $.post("/api/getfriend.php", function (result) {
+        r = JSON.parse(result);
+        if (r.length > 0) {
+            $("#chatlist").empty();
+            r.forEach(showChat);
+        }
+    })
 }
 
 function escapeHTML(str) {
