@@ -16,7 +16,7 @@ $("#myMessage").on("keydown", function (event) {
     }
 });
 
-function sendMessage(){
+function sendMessage() {
     var plaintext = $.trim(document.getElementById("myMessage").value);
     if (plaintext != "") {
         showNewText(plaintext, new Date(), 0);//0 for send, 1 for receive
@@ -37,6 +37,13 @@ function encryptMessage(plaintext) {
     } else {
         alert("something goes wrong, please reload the page");
     }
+}
+
+function deserializeRSAKey(key) {
+    let json = JSON.parse(key);
+    let rsa = new RSAKey();
+    rsa.setPrivateEx(json.n, json.e, json.d, json.p, json.q, json.dmp1, json.dmq1, json.coeff);
+    return rsa;
 }
 
 function showNewText(text, timestamp, inner) {
@@ -109,6 +116,6 @@ function escapeHTML(str) {
     );
 }
 
-function selectContact(id){
+function selectContact(id) {
     $("#main").attr("class", "main is-visible");
 }
