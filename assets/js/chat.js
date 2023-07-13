@@ -48,12 +48,11 @@ function sendMessage() {
     }
     var plaintext = $.trim(document.getElementById("myMessage").value);
     if (plaintext != "") {
-        showText(plaintext, new Date(), 0);//0 for send, 1 for receive
-        uploadMessage(plaintext);
+        uploadMessage(plaintext, 1);
         $("#myMessage").val("");
         document.getElementById("myMessage").style.height = "47px";
     } else {
-        alert("no input");
+        return;
     }
 }
 
@@ -73,7 +72,7 @@ function deserializeRSAKey(key) {
     return rsa;
 }
 
-function showText(text, timestamp, inner) {
+function htmlNewText(text, timestamp, inner) {
     // XSS protection when display text
     text = escapeHTML(text);
 
@@ -242,7 +241,7 @@ function decodeShowMessage(message) {
         }
     }
     if (message['type'] == "1") {
-        $("#chatbox").append(showText(plaintext, time, inner));
+        $("#chatbox").append(htmlNewText(plaintext, time, inner));
     }
     
     document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight });
@@ -252,7 +251,7 @@ function getPreviousChatHistory(uid, count) {
     // this is for when user scroll to the top, load previous chat history
 }
 
-function uploadMessage(plaintext){
+function uploadMessage(plaintext, type){
     currentPublicKey
     currentRelation
 
@@ -264,9 +263,18 @@ function uploadMessage(plaintext){
         console.log("encrypt success");
         sender = senderresult.cipher;
         receiver = receiverresult.cipher;
+
+        $.post("/api/send.php", { "relation": currentRelation, "type": type, "sender": sender, "receiver": receiver }).then(function (response) {
+            var sendresult = JSON.parse(response);
+            if (sendresult['status'] == 'success'){
+                console.log("send success");
+                $("#chatbox").append(htmlNewText(plaintext, new Date(), 0));
+                document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight , behavior: 'smooth' });
+            }
+        })
+    }else{
+        alert("Something goes wrong, please reload the page.")
     }
-    console.log(sender);
-    console.log(receiver);
 }
 
 
