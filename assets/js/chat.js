@@ -45,9 +45,7 @@ function sendMessage() {
     var plaintext = $.trim(document.getElementById("myMessage").value);
     if (plaintext != "") {
         showText(plaintext, new Date(), 0);//0 for send, 1 for receive
-        var ciphertext = encryptMessage(plaintext);
-        //upload(ciphertext, timestamp);
-        //alert(ciphertext);
+        uploadMessage(plaintext);
         $("#myMessage").val("");
         document.getElementById("myMessage").style.height = "47px";
     } else {
@@ -248,6 +246,23 @@ function decodeShowMessage(message) {
 
 function getPreviousChatHistory(uid, count) {
     // this is for when user scroll to the top, load previous chat history
+}
+
+function uploadMessage(plaintext){
+    currentPublicKey
+    currentRelation
+
+    var sender = "";
+    var receiver = "";
+    var senderresult = cryptico.encrypt(plaintext, myPublicKey);
+    var receiverresult = cryptico.encrypt(plaintext, currentPublicKey);
+    if (senderresult.status == 'success' && receiverresult.status == 'success'){
+        console.log("encrypt success");
+        sender = senderresult.cipher;
+        receiver = receiverresult.cipher;
+    }
+    console.log(sender);
+    console.log(receiver);
 }
 
 
