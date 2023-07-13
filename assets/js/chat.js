@@ -2,9 +2,22 @@ $(document).ready(function () {
     // initialize variables
     myinfo = JSON.parse(localStorage.getItem('info'));
     mykey = deserializeRSAKey(localStorage.getItem('key'));
-    // getChatList();
-    getFriendList();
+    $.post("/api/getfriend.php").then(function (response) {
+        friends = $.map(JSON.parse(response), function (_) { return _ }) // convert JSON to array
+        friends.sort(timeascend).forEach(function (friend) {
+            console.log(friend);
+            showChat(friend);
+        });
+    })
 });
+
+function timeascend(x, y) {
+    return x["time"] - y["time"];
+}
+
+function nameascend(x, y) {
+    return x["name"] - y["name"];
+}
 
 // onClick send button
 $("#sendMessageButton").on("click", function (event) {
@@ -110,16 +123,16 @@ function timeToString(time) {
     return timeString;
 }
 
-function showChat(chat) {
+function showChat(friend) {
     var $card = $('<a href="#" class="card border-0 text-reset" onclick="selectContact(this.id);"></a>');
-    $card.attr('id', 'c' + chat["relationid"]);
+    $card.attr('id', 'c-' + friend["relationid"]);
     var $cardBody = $('<div class="card-body"></div>');
     var $row = $('<div class="row gx-5"></div>');
     var $avatarCol = $('<div class="col-auto"></div>');
     var $avatar = $('<div class="avatar"></div>');
     var $avatarimg;
-    if (true) {
-        $avatarimg = $('<span class="avatar-text">M</span>');
+    if (friend["avatar"] == null) {
+        $avatarimg = $('<span class="avatar-text">' + getDisplayName(friend['info']).charAt(0) + '</span>');
     } else {
         $avatarimg = $('<img alt="#" class="avatar-img">');
         //$avatarimg.attr('src', contactinfo['avatar']);
@@ -130,12 +143,12 @@ function showChat(chat) {
 
     var $infoCol = $('<div class="col"></div>');
     var $contactInfo = $('<div class="d-flex align-items-center mb-3"></div>');
-    var $name = $('<h5 class="me-auto mb-0">' + "name" + '</h5>');
-    var $time = $('<span class="text-muted extra-small ms-2 last-chat-time">' + timeToString(new Date(parseInt(chat['time']))) + '</span>')
+    var $name = $('<h5 class="me-auto mb-0">' + getDisplayName(friend['info']) + '</h5>');
+    var $time = $('<span class="text-muted extra-small ms-2 last-chat-time">' + timeToString(new Date(parseInt(friend['time']))) + '</span>')
     $contactInfo.append($name);
     $contactInfo.append($time);
     var $message = $('<div class="d-flex align-items-center"> \
-            <div class="line-clamp me-auto last-chat-message">'+ chat['message'] + ' \
+            <div class="line-clamp me-auto last-chat-message">'+ friend['message'] + ' \
             </div> \
             <div class="badge badge-circle bg-primary ms-5 unread"> \
                 <span class="unread-count"></span> \
@@ -150,14 +163,24 @@ function showChat(chat) {
     $('#chatlist').append($card);
 }
 
-function getFriendList() {
-    $.post("/api/getfriend.php", function (result) {
-        r = JSON.parse(result);
-        if (r.length > 0) {
-            $("#chatlist").empty();
-            r.forEach(showChat);
-        }
+function getUserInfo(userlist) {
+    $.post("/api/getuserinfo.php", { "users": userlist }, function (result) {
+        userinfo = JSON.parse(result);
+        console.log(userinfo);
+        userinfo.forEach(function (info) {
+            //info["displayName"] = getDisplayName(info);
+        })
     })
+}
+
+function getDisplayName(info) {
+    if (info["name"] != null && info["name"] != "") {
+        return info["name"];
+    } else if (info["uname"] != null && info["uname"] != "") {
+        return info["uname"];
+    } else {
+        return info["email"];
+    }
 }
 
 function escapeHTML(str) {
@@ -176,4 +199,5 @@ function escapeHTML(str) {
 
 function selectContact(id) {
     $("#main").attr("class", "main is-visible");
+    $("#chatbox").empty();
 }
