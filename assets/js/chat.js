@@ -6,7 +6,7 @@ $(document).ready(function () {
     $.post("/api/getfriend.php").then(function (response) {
         friends = JSON.parse(response);
         friendsArr = $.map(JSON.parse(response), function (_) { return _ });
-        friendsArr.sort(timeascend).forEach(function (friend) {
+        friendsArr.sort(timedescend).forEach(function (friend) {
             showChat(friend);
         });
         friends
