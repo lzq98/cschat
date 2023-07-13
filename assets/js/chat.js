@@ -42,6 +42,10 @@ $("#myMessage").on("keydown", function (event) {
 });
 
 function sendMessage() {
+    if (currentUser == -1 || currentRelation == -1 || currentRelation == ""){
+        // have not select user to chat with
+        return;
+    }
     var plaintext = $.trim(document.getElementById("myMessage").value);
     if (plaintext != "") {
         showText(plaintext, new Date(), 0);//0 for send, 1 for receive
