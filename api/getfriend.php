@@ -3,7 +3,7 @@ include "./include/requirelogin.php";
 include "./include/db.php";
 
 $uid = $_SESSION['uid'];
-$uid = '1';
+
 $query = sprintf(
     "SELECT relationid, sender, receiver, time, message FROM friends WHERE (sender='%s' OR receiver='%s') AND isfriend=true",
     $uid,
@@ -12,6 +12,7 @@ $query = sprintf(
 $result = $conn->query($query);
 
 $friends = array();
+$_SESSION['relations'] = [];
 if (mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
         $friends[$row['sender'] == $uid ? $row['receiver'] : $row['sender']] =
@@ -19,6 +20,7 @@ if (mysqli_num_rows($result) > 0) {
             'time' => $row['time'],
             'message' => $row['message']
         );
+        $_SESSION['relations'][$row['relationid']] = true;
     }
 }
 

@@ -2,17 +2,25 @@ $(document).ready(function () {
     // initialize variables
     myinfo = JSON.parse(localStorage.getItem('info'));
     mykey = deserializeRSAKey(localStorage.getItem('key'));
+    myPublicKey = cryptico.publicKeyString(mykey);
     $.post("/api/getfriend.php").then(function (response) {
-        friends = $.map(JSON.parse(response), function (_) { return _ }) // convert JSON to array
-        friends.sort(timeascend).forEach(function (friend) {
-            console.log(friend);
+        friends = JSON.parse(response);
+        friendsArr = $.map(JSON.parse(response), function (_) { return _ });
+        friendsArr.sort(timeascend).forEach(function (friend) {
             showChat(friend);
         });
+        friends
     })
+    currentUser = -1;
+    currentRelation = -1;
+    currentPublicKey = "";
 });
 
 function timeascend(x, y) {
     return x["time"] - y["time"];
+}
+function timedescend(x, y) {
+    return y["time"] - x["time"];
 }
 
 function nameascend(x, y) {
@@ -36,7 +44,7 @@ $("#myMessage").on("keydown", function (event) {
 function sendMessage() {
     var plaintext = $.trim(document.getElementById("myMessage").value);
     if (plaintext != "") {
-        showNewText(plaintext, new Date(), 0);//0 for send, 1 for receive
+        showText(plaintext, new Date(), 0);//0 for send, 1 for receive
         var ciphertext = encryptMessage(plaintext);
         //upload(ciphertext, timestamp);
         //alert(ciphertext);
@@ -63,7 +71,7 @@ function deserializeRSAKey(key) {
     return rsa;
 }
 
-function showNewText(text, timestamp, inner) {
+function showText(text, timestamp, inner) {
     // XSS protection when display text
     text = escapeHTML(text);
 
@@ -94,11 +102,7 @@ function showNewText(text, timestamp, inner) {
 
 
     $newMessage.append($messageInner);
-    $("#chatbox").append($newMessage);
-    var chatbody = document.getElementById("chatbody");
-
-    // scroll to the bottom
-    chatbody.scroll({ top: chatbody.scrollHeight, behavior: 'smooth' });
+    return $newMessage;
 }
 
 function timeToString(time) {
@@ -124,8 +128,7 @@ function timeToString(time) {
 }
 
 function showChat(friend) {
-    var $card = $('<a href="#" class="card border-0 text-reset" onclick="selectContact(this.id);"></a>');
-    $card.attr('id', 'c-' + friend["relationid"]);
+    var $card = $('<a href="#" class="card border-0 text-reset" onclick="selectContact(' + friend["info"]["uid"] + ');"></a>');
     var $cardBody = $('<div class="card-body"></div>');
     var $row = $('<div class="row gx-5"></div>');
     var $avatarCol = $('<div class="col-auto"></div>');
@@ -197,7 +200,70 @@ function escapeHTML(str) {
     );
 }
 
-function selectContact(id) {
-    $("#main").attr("class", "main is-visible");
+function selectContact(uid) {
+    if (uid == currentUser) {
+        return;
+    }
+    currentUser = uid;
+    currentRelation = friends[uid]['relationid'];
+    currentPublicKey = friends[uid]['info']['publickey'];
+    console.log("now chat with " + uid);
     $("#chatbox").empty();
+    loadChatHistory(uid);
+    $("#main").attr("class", "main is-visible");
+}
+
+function loadChatHistory(uid) {
+    // this function is to load last 20 chat history when change contact
+    $.post("/api/gethistory.php", { "relation": friends[uid]['relationid'], "count": 0 }).then(function (response) {
+        var chathistory = $.map(JSON.parse(response), function (_) { return _ }) // convert JSON to array
+        chathistory.sort(timeascend).forEach(function (message) {
+            decodeShowMessage(message);
+        });
+    })
+}
+
+function decodeShowMessage(message) {
+    var time = new Date(parseInt(message['time']));
+    var plaintext = "[Undecyptable message]";
+    var result = cryptico.decrypt(message['sender'], mykey);
+    var inner = 0;
+    if (result.status == 'success') {
+        // if i can decrypt sender, that means the message was sent by myself
+        plaintext = result.plaintext;
+    } else {
+        // otherwise this is a message that i received
+        result = cryptico.decrypt(message['receiver'], mykey);
+        if (result.status == 'success') {
+            plaintext = result.plaintext;
+            inner = 1;
+        }
+    }
+    if (message['type'] == "1") {
+        $("#chatbox").append(showText(plaintext, time, inner));
+    }
+    
+    document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight });
+}
+
+function getPreviousChatHistory(uid, count) {
+    // this is for when user scroll to the top, load previous chat history
+}
+
+
+////////////////////////////////////////////////////////////////////////
+// test only functions
+
+function encryptMessage(plaintext, publicKey) {
+    var result = cryptico.encrypt(plaintext, publicKey);
+    if (result.status == 'success') {
+        console.log(result.cipher);
+    } else {
+        console.log("failed to encrypt");
+    }
+}
+
+function decryptMessage(cipher) {
+    var result = cryptico.decrypt(cipher, mykey);
+
 }
