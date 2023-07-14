@@ -11,6 +11,8 @@ $(document).ready(function () {
         });
         friends
     })
+    $("#myAvatarSm").empty();
+    $("#myAvatarSm").append(getAvatarHtml(myinfo));
     currentUser = -1;
     currentRelation = -1;
     currentPublicKey = "";
@@ -84,8 +86,8 @@ function htmlNewText(text, timestamp, inner) {
     // setup avatar
     var $avatar = $('<a href="#" data-bs-toggle="modal" class="avatar avatar-responsive"></a>');
     $avatar.attr('data-bs-target', inner ? "#modal-user-profile" : "#modal-profile");
-    var $avatarImg = $('<img class="avatar-img" alt="">');
-    $avatarImg.attr('src', inner ? "assets/img/avatars/2.jpg" : "assets/img/avatars/1.jpg");
+    var $avatarImg = inner ? getAvatarHtml(friends[currentUser]['info']) : getAvatarHtml(myinfo);
+    //$avatarImg.attr('src', inner ? "assets/img/avatars/2.jpg" : "assets/img/avatars/1.jpg");
     $avatar.append($avatarImg);
     $newMessage.append($avatar);
 
@@ -136,13 +138,7 @@ function showChatCard(friend) {
     var $row = $('<div class="row gx-5"></div>');
     var $avatarCol = $('<div class="col-auto"></div>');
     var $avatar = $('<div class="avatar"></div>');
-    var $avatarimg;
-    if (friend["avatar"] == null) {
-        $avatarimg = $('<span class="avatar-text">' + getDisplayName(friend['info']).charAt(0) + '</span>');
-    } else {
-        $avatarimg = $('<img alt="#" class="avatar-img">');
-        //$avatarimg.attr('src', contactinfo['avatar']);
-    }
+    var $avatarimg = getAvatarHtml(friend['info']);
     $avatar.append($avatarimg);
     $avatarCol.append($avatar);
     $row.append($avatarCol);
@@ -154,18 +150,23 @@ function showChatCard(friend) {
     $contactInfo.append($name);
     $contactInfo.append($time);
 
-    plaintext = "[Undecryptable message]";
-    var result = cryptico.decrypt(friend['message']['sender'], mykey);
-    if (result.status == 'success') {
-        // if i can decrypt sender, that means the message was sent by myself
-        plaintext = "You: " + result.plaintext;
-    } else {
-        // otherwise this is a message that i received
-        result = cryptico.decrypt(friend['message']['receiver'], mykey);
+    var plaintext = "[Undecryptable message]";
+    if (friend['message']['type'] !== null) {
+        var result = cryptico.decrypt(friend['message']['sender'], mykey);
         if (result.status == 'success') {
-            plaintext = result.plaintext;
+            // if i can decrypt sender, that means the message was sent by myself
+            plaintext = "You: " + result.plaintext;
+        } else {
+            // otherwise this is a message that i received
+            result = cryptico.decrypt(friend['message']['receiver'], mykey);
+            if (result.status == 'success') {
+                plaintext = result.plaintext;
+            }
         }
+    }else{
+        plaintext = "[No message]";
     }
+
 
     var $message = $('<div class="d-flex align-items-center"> \
             <div class="line-clamp me-auto last-chat-message">'+ plaintext + ' \
@@ -203,6 +204,16 @@ function getDisplayName(info) {
     }
 }
 
+function getAvatarHtml(info) {
+    if (info["avatar"] == null) {
+        $avatarHtml = $('<span class="avatar-text">' + getDisplayName(info).charAt(0) + '</span>');
+    } else {
+        $avatarHtml = $('<img alt="#" class="avatar-img">');
+        //$avatarimg.attr('src', contactinfo['avatar']);
+    }
+    return $avatarHtml;
+}
+
 function escapeHTML(str) {
     return str.replace(
         /[&<>'"]/g,
@@ -227,8 +238,13 @@ function selectContact(uid) {
     currentPublicKey = friends[uid]['info']['publickey'];
     console.log("now chat with " + uid);
     $("#chatbox").empty();
+    $("#currentContactName").text(getDisplayName(friends[uid]['info']));
+    $("#currentContactAvatar").empty();
+    $("#currentContactAvatar").append(getAvatarHtml(friends[uid]['info']));
+    $("#currentContactAvatarSm").empty();
+    $("#currentContactAvatarSm").append(getAvatarHtml(friends[uid]['info']));
     loadChatHistory(uid);
-    if (getNewMessageIntervalId == 0){
+    if (getNewMessageIntervalId == 0) {
         getNewMessageIntervalId = setInterval("retrieveNewMessage()", 1000);
     }
 }
@@ -237,15 +253,17 @@ function loadChatHistory(uid) {
     // this function is to load last 20 chat history when change contact
     $.post("/api/gethistory.php", { "relation": friends[uid]['relationid'] }).then(function (response) {
         var chathistory = $.map(JSON.parse(response), function (_) { return _ }) // convert JSON to array
+        $("#emptyNotify").removeAttr("hidden");
+        $("#emptyMessage").text("No chat history");
         chathistory.sort(timeascend).forEach(function (message) {
             decodeShowMessage(message);
-
         });
         document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight });
     })
 }
 
 function decodeShowMessage(message) {
+    $("#emptyNotify").prop("hidden", "hidden");
     var time = new Date(parseInt(message['time']));
     var plaintext = "[Undecyptable message]";
     var result = cryptico.decrypt(message['sender'], mykey);
@@ -301,8 +319,9 @@ function uploadMessage(plaintext, type) {
 function retrieveNewMessage() {
     // this function is to load last 20 chat history when change contact
     $.post("/api/getnewmessage.php", { "relation": friends[currentUser]['relationid'], "lastmessage": currentLastMessageId }).then(function (response) {
-        var chathistory = $.map(JSON.parse(response), function (_) { return _ }) // convert JSON to array
+        var chathistory = $.map(JSON.parse(response), function (_) { return _ }) // convert JSON to array and sort, incase there are multiple messages received
         chathistory.sort(timeascend).forEach(function (message) {
+            // new message received
             decodeShowMessage(message);
             document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight, behavior: 'smooth' });
         });
