@@ -222,7 +222,9 @@ function loadChatHistory(uid) {
         var chathistory = $.map(JSON.parse(response), function (_) { return _ }) // convert JSON to array
         chathistory.sort(timeascend).forEach(function (message) {
             decodeShowMessage(message);
+
         });
+        document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight });
     })
 }
 
@@ -247,7 +249,7 @@ function decodeShowMessage(message) {
         $("#chatbox").append(htmlNewText(plaintext, time, inner));
     }
 
-    document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight });
+
 }
 
 function getPreviousChatHistory(uid, count) {
@@ -270,7 +272,7 @@ function uploadMessage(plaintext, type) {
         $.post("/api/send.php", { "relation": currentRelation, "type": type, "sender": sender, "receiver": receiver }).then(function (response) {
             var sendresult = JSON.parse(response);
             if (sendresult['status'] == 'success') {
-                currentLastMessageId = sendresult['id'] 
+                currentLastMessageId = sendresult['id']
                 console.log("send success");
                 $("#chatbox").append(htmlNewText(plaintext, new Date(), 0));
                 document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight, behavior: 'smooth' });
@@ -283,12 +285,12 @@ function uploadMessage(plaintext, type) {
 
 function retrieveNewMessage() {
     // this function is to load last 20 chat history when change contact
-    $.post("/api/getnewmessage.php", { "relation": friends[currentUser]['relationid'],  "lastmessage": currentLastMessageId}).then(function (response) {
+    $.post("/api/getnewmessage.php", { "relation": friends[currentUser]['relationid'], "lastmessage": currentLastMessageId }).then(function (response) {
         var chathistory = $.map(JSON.parse(response), function (_) { return _ }) // convert JSON to array
         chathistory.sort(timeascend).forEach(function (message) {
             decodeShowMessage(message);
+            document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight, behavior: 'smooth' });
         });
-        document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight, behavior: 'smooth' });
     })
 }
 ////////////////////////////////////////////////////////////////////////
