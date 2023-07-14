@@ -7,7 +7,7 @@ $(document).ready(function () {
         friends = JSON.parse(response);
         friendsArr = $.map(JSON.parse(response), function (_) { return _ });
         friendsArr.sort(timedescend).forEach(function (friend) {
-            showChat(friend);
+            showChatCard(friend);
         });
         friends
     })
@@ -15,6 +15,7 @@ $(document).ready(function () {
     currentRelation = -1;
     currentPublicKey = "";
     currentLastMessageId = 0;
+    getNewMessageIntervalId = 0;
 });
 
 function timeascend(x, y) {
@@ -129,7 +130,7 @@ function timeToString(time) {
     return timeString;
 }
 
-function showChat(friend) {
+function showChatCard(friend) {
     var $card = $('<a href="#" class="card border-0 text-reset" onclick="selectContact(' + friend["info"]["uid"] + ');"></a>');
     var $cardBody = $('<div class="card-body"></div>');
     var $row = $('<div class="row gx-5"></div>');
@@ -152,8 +153,22 @@ function showChat(friend) {
     var $time = $('<span class="text-muted extra-small ms-2 last-chat-time">' + timeToString(new Date(parseInt(friend['time']))) + '</span>')
     $contactInfo.append($name);
     $contactInfo.append($time);
+
+    plaintext = "[Undecryptable message]";
+    var result = cryptico.decrypt(friend['message']['sender'], mykey);
+    if (result.status == 'success') {
+        // if i can decrypt sender, that means the message was sent by myself
+        plaintext = "You: " + result.plaintext;
+    } else {
+        // otherwise this is a message that i received
+        result = cryptico.decrypt(friend['message']['receiver'], mykey);
+        if (result.status == 'success') {
+            plaintext = result.plaintext;
+        }
+    }
+
     var $message = $('<div class="d-flex align-items-center"> \
-            <div class="line-clamp me-auto last-chat-message">'+ friend['message'] + ' \
+            <div class="line-clamp me-auto last-chat-message">'+ plaintext + ' \
             </div> \
             <div class="badge badge-circle bg-primary ms-5 unread"> \
                 <span class="unread-count"></span> \
@@ -213,7 +228,9 @@ function selectContact(uid) {
     console.log("now chat with " + uid);
     $("#chatbox").empty();
     loadChatHistory(uid);
-    setInterval("retrieveNewMessage()", 1000);
+    if (getNewMessageIntervalId == 0){
+        getNewMessageIntervalId = setInterval("retrieveNewMessage()", 1000);
+    }
 }
 
 function loadChatHistory(uid) {

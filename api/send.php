@@ -30,6 +30,7 @@ if ($conn->query($query) === TRUE) {
         "SELECT LAST_INSERT_ID()"
     );
 
+    // get latest chatid
     $result = $conn->query($query);
     if (mysqli_num_rows($result) == 1) {
         $row = mysqli_fetch_assoc($result);
@@ -40,9 +41,20 @@ if ($conn->query($query) === TRUE) {
             $lastmessageid,
             mysqli_real_escape_string($conn, $relation),
         );
-        if ($conn->query($query) === TRUE){
+        if ($conn->query($query) === TRUE) {
             $sendresult = ["status" => "success", "id" => $lastmessageid];
         }
     }
+
+
+    // update receiver unread count
+    $query = sprintf(
+        "UPDATE `friends` SET %s = %s + 1 WHERE relationid = %s",
+        $_SESSION['relations'][$relation] === "sender" ? "runread" : "sunread",
+        $_SESSION['relations'][$relation] === "sender" ? "runread" : "sunread",
+        mysqli_real_escape_string($conn, $relation)
+    );
+    $conn->query($query);
+    // Do not need result
 }
 echo json_encode($sendresult);

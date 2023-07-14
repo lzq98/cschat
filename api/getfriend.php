@@ -5,7 +5,10 @@ include "./include/db.php";
 $uid = $_SESSION['uid'];
 
 $query = sprintf(
-    "SELECT relationid, sender, receiver, time, message FROM friends WHERE (sender='%s' OR receiver='%s') AND isfriend=true",
+    "SELECT friends.relationid, friends.sender, friends.receiver, friends.time, 
+    chat.type, chat.sender AS stext, chat.receiver AS rtext FROM friends 
+    LEFT JOIN chat ON friends.message=chat.chatid 
+    WHERE (friends.sender=1 OR friends.receiver=1) AND isfriend=true ",
     $uid,
     $uid
 ); // no need for SQL injection protection because no user input
@@ -19,7 +22,11 @@ if (mysqli_num_rows($result) > 0) {
             array(
                 'relationid' => $row['relationid'],
                 'time' => $row['time'],
-                'message' => $row['message']
+                'message' => array(
+                    'type' => $row['stext'],
+                    'sender' => $row['stext'],
+                    'receiver' => $row['rtext']
+                )
             );
         $_SESSION['relations'][$row['relationid']] = $row['sender'] == $uid ? "sender" : "receiver";
     }
@@ -31,7 +38,6 @@ $query = sprintf(
 );
 
 $result = $conn->query($query);
-
 if (mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
         $friends[$row['uid']]["info"] = $row;
