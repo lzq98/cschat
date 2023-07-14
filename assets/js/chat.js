@@ -203,6 +203,7 @@ function escapeHTML(str) {
 }
 
 function selectContact(uid) {
+    $("#main").attr("class", "main is-visible");
     if (uid == currentUser) {
         return;
     }
@@ -212,7 +213,6 @@ function selectContact(uid) {
     console.log("now chat with " + uid);
     $("#chatbox").empty();
     loadChatHistory(uid);
-    $("#main").attr("class", "main is-visible");
     setInterval("retrieveNewMessage()", 1000);
 }
 
@@ -248,8 +248,6 @@ function decodeShowMessage(message) {
     if (message['type'] == "1") {
         $("#chatbox").append(htmlNewText(plaintext, time, inner));
     }
-
-
 }
 
 function getPreviousChatHistory(uid, count) {
