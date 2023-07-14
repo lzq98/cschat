@@ -16,11 +16,12 @@ $_SESSION['relations'] = [];
 if (mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
         $friends[$row['sender'] == $uid ? $row['receiver'] : $row['sender']] =
-            array('relationid' => $row['relationid'],
-            'time' => $row['time'],
-            'message' => $row['message']
-        );
-        $_SESSION['relations'][$row['relationid']] = true;
+            array(
+                'relationid' => $row['relationid'],
+                'time' => $row['time'],
+                'message' => $row['message']
+            );
+        $_SESSION['relations'][$row['relationid']] = $row['sender'] == $uid ? "sender" : "receiver";
     }
 }
 

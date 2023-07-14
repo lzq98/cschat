@@ -41,7 +41,7 @@ if ($conn->query($query) === TRUE) {
             mysqli_real_escape_string($conn, $relation),
         );
         if ($conn->query($query) === TRUE){
-            $sendresult = ["status" => "success"];
+            $sendresult = ["status" => "success", "id" => $lastmessageid];
         }
     }
 }

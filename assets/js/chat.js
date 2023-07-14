@@ -14,6 +14,7 @@ $(document).ready(function () {
     currentUser = -1;
     currentRelation = -1;
     currentPublicKey = "";
+    currentLastMessageId = 0;
 });
 
 function timeascend(x, y) {
@@ -42,7 +43,7 @@ $("#myMessage").on("keydown", function (event) {
 });
 
 function sendMessage() {
-    if (currentUser == -1 || currentRelation == -1 || currentRelation == ""){
+    if (currentUser == -1 || currentRelation == -1 || currentRelation == "") {
         // have not select user to chat with
         return;
     }
@@ -212,11 +213,12 @@ function selectContact(uid) {
     $("#chatbox").empty();
     loadChatHistory(uid);
     $("#main").attr("class", "main is-visible");
+    setInterval("retrieveNewMessage()", 1000);
 }
 
 function loadChatHistory(uid) {
     // this function is to load last 20 chat history when change contact
-    $.post("/api/gethistory.php", { "relation": friends[uid]['relationid'], "count": 0 }).then(function (response) {
+    $.post("/api/gethistory.php", { "relation": friends[uid]['relationid'] }).then(function (response) {
         var chathistory = $.map(JSON.parse(response), function (_) { return _ }) // convert JSON to array
         chathistory.sort(timeascend).forEach(function (message) {
             decodeShowMessage(message);
@@ -229,6 +231,7 @@ function decodeShowMessage(message) {
     var plaintext = "[Undecyptable message]";
     var result = cryptico.decrypt(message['sender'], mykey);
     var inner = 0;
+    currentLastMessageId = message['chatid'];
     if (result.status == 'success') {
         // if i can decrypt sender, that means the message was sent by myself
         plaintext = result.plaintext;
@@ -243,7 +246,7 @@ function decodeShowMessage(message) {
     if (message['type'] == "1") {
         $("#chatbox").append(htmlNewText(plaintext, time, inner));
     }
-    
+
     document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight });
 }
 
@@ -251,7 +254,7 @@ function getPreviousChatHistory(uid, count) {
     // this is for when user scroll to the top, load previous chat history
 }
 
-function uploadMessage(plaintext, type){
+function uploadMessage(plaintext, type) {
     currentPublicKey
     currentRelation
 
@@ -259,25 +262,35 @@ function uploadMessage(plaintext, type){
     var receiver = "";
     var senderresult = cryptico.encrypt(plaintext, myPublicKey);
     var receiverresult = cryptico.encrypt(plaintext, currentPublicKey);
-    if (senderresult.status == 'success' && receiverresult.status == 'success'){
+    if (senderresult.status == 'success' && receiverresult.status == 'success') {
         console.log("encrypt success");
         sender = senderresult.cipher;
         receiver = receiverresult.cipher;
 
         $.post("/api/send.php", { "relation": currentRelation, "type": type, "sender": sender, "receiver": receiver }).then(function (response) {
             var sendresult = JSON.parse(response);
-            if (sendresult['status'] == 'success'){
+            if (sendresult['status'] == 'success') {
+                currentLastMessageId = sendresult['id'] 
                 console.log("send success");
                 $("#chatbox").append(htmlNewText(plaintext, new Date(), 0));
-                document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight , behavior: 'smooth' });
+                document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight, behavior: 'smooth' });
             }
         })
-    }else{
+    } else {
         alert("Something goes wrong, please reload the page.")
     }
 }
 
-
+function retrieveNewMessage() {
+    // this function is to load last 20 chat history when change contact
+    $.post("/api/getnewmessage.php", { "relation": friends[currentUser]['relationid'],  "lastmessage": currentLastMessageId}).then(function (response) {
+        var chathistory = $.map(JSON.parse(response), function (_) { return _ }) // convert JSON to array
+        chathistory.sort(timeascend).forEach(function (message) {
+            decodeShowMessage(message);
+        });
+        document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight, behavior: 'smooth' });
+    })
+}
 ////////////////////////////////////////////////////////////////////////
 // test only functions
 

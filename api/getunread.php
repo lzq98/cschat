@@ -4,9 +4,9 @@ include "./include/db.php";
 //{"relation": id, "count": 0, "request": 20}
 
 $relation = $_POST['relation'];
-$alreadyload = isset($_SESSION['alreadyload']) ? $_SESSION['alreadyload'] : 0;  // default search from end
+$skip = isset($_SESSION['skip']) ? $_SESSION['skip'] : 0;  // default search from end
 // first check if the relationship exists or relation id is valid
-if (is_numeric($relation) && is_numeric($alreadyload)){
+if (is_numeric($relation) && is_numeric($count) && is_numeric($from)){
     if (array_key_exists($relation, $_SESSION['relations'])){
         //echo "relation exists";
     }
@@ -14,9 +14,9 @@ if (is_numeric($relation) && is_numeric($alreadyload)){
 
 
 $query = sprintf(
-    "SELECT chatid, time, type, sender, receiver FROM chat WHERE relationid = %s ORDER BY chatid DESC LIMIT %s, 20",
+    "SELECT time, type, sender, receiver FROM chat WHERE relationid = %s ORDER BY chatid DESC LIMIT %s, 20",
     mysqli_real_escape_string($conn, $relation),
-    mysqli_real_escape_string($conn, $alreadyload)
+    mysqli_real_escape_string($conn, $skip)
 );
 
 $result = $conn->query($query);
