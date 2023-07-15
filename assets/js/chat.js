@@ -61,7 +61,7 @@ function sendMessage() {
 }
 
 function encryptMessage(plaintext) {
-    var ciphertext = cryptico.encrypt(plaintext, publicKey);
+    var ciphertext = cryptico.encrypt(encodeURI(plaintext), publicKey);
     if (ciphertext.status) {
         return ciphertext.cipher;
     } else {
@@ -155,12 +155,12 @@ function showChatCard(friend) {
         var result = cryptico.decrypt(friend['message']['sender'], mykey);
         if (result.status == 'success') {
             // if i can decrypt sender, that means the message was sent by myself
-            plaintext = "You: " + result.plaintext;
+            plaintext = "You: " + decodeURI(result.plaintext);
         } else {
             // otherwise this is a message that i received
             result = cryptico.decrypt(friend['message']['receiver'], mykey);
             if (result.status == 'success') {
-                plaintext = result.plaintext;
+                plaintext = decodeURI(result.plaintext);
             }
         }
     }else{
@@ -271,12 +271,12 @@ function decodeShowMessage(message) {
     currentLastMessageId = message['chatid'];
     if (result.status == 'success') {
         // if i can decrypt sender, that means the message was sent by myself
-        plaintext = result.plaintext;
+        plaintext = decodeURI(result.plaintext);
     } else {
         // otherwise this is a message that i received
         result = cryptico.decrypt(message['receiver'], mykey);
         if (result.status == 'success') {
-            plaintext = result.plaintext;
+            plaintext = decodeURI(result.plaintext);
             inner = 1;
         }
     }
@@ -295,8 +295,8 @@ function uploadMessage(plaintext, type) {
 
     var sender = "";
     var receiver = "";
-    var senderresult = cryptico.encrypt(plaintext, myPublicKey);
-    var receiverresult = cryptico.encrypt(plaintext, currentPublicKey);
+    var senderresult = cryptico.encrypt(encodeURI(plaintext), myPublicKey);
+    var receiverresult = cryptico.encrypt(encodeURI(plaintext), currentPublicKey);
     if (senderresult.status == 'success' && receiverresult.status == 'success') {
         console.log("encrypt success");
         sender = senderresult.cipher;
@@ -329,15 +329,6 @@ function retrieveNewMessage() {
 }
 ////////////////////////////////////////////////////////////////////////
 // test only functions
-
-function encryptMessage(plaintext, publicKey) {
-    var result = cryptico.encrypt(plaintext, publicKey);
-    if (result.status == 'success') {
-        console.log(result.cipher);
-    } else {
-        console.log("failed to encrypt");
-    }
-}
 
 function decryptMessage(cipher) {
     var result = cryptico.decrypt(cipher, mykey);
