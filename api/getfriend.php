@@ -8,7 +8,7 @@ $query = sprintf(
     "SELECT friends.relationid, friends.sender, friends.receiver, friends.time, 
     chat.type, chat.sender AS stext, chat.receiver AS rtext FROM friends 
     LEFT JOIN chat ON friends.message=chat.chatid 
-    WHERE (friends.sender=1 OR friends.receiver=1) AND isfriend=true ",
+    WHERE (friends.sender='%s' OR friends.receiver='%s') AND isfriend=true ",
     $uid,
     $uid
 ); // no need for SQL injection protection because no user input
