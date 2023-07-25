@@ -157,11 +157,11 @@
                 <!-- Profile -->
                 <li class="nav-item">
                     <a href="#" class="nav-link p-0 mt-lg-2" data-bs-toggle="modal" data-bs-target="#modal-profile">
-                        <div class="avatar avatar-online mx-auto d-none d-xl-block">
-                            <img class="avatar-img" src="assets/img/avatars/1.jpg" alt="">
+                        <div class="avatar avatar-online mx-auto d-none d-xl-block" id="navbar-avatar-desktop">
+                            <span class="avatar-text">-</span>
                         </div>
-                        <div class="avatar avatar-online avatar-xs d-xl-none">
-                            <img class="avatar-img" src="assets/img/avatars/1.jpg" alt="">
+                        <div class="avatar avatar-online avatar-xs d-xl-none" id="navbar-avatar-mobile">
+                            <span class="avatar-text">-</span>
                         </div>
                     </a>
                 </li>
@@ -2100,7 +2100,10 @@
                                         <div class="row align-items-center gx-5">
                                             <div class="col-auto">
                                                 <div class="avatar">
-                                                    <img src="assets/img/avatars/1.jpg" alt="#" class="avatar-img">
+                                                    <div class="avatar" id="settings-avatar">
+                                                        <span class="avatar-text">-</span>
+                                                    </div>
+                                                    
 
                                                     <div
                                                         class="badge badge-circle bg-secondary border-outline position-absolute bottom-0 end-0">
@@ -2114,7 +2117,7 @@
                                                             <polyline points="21 15 16 10 5 21"></polyline>
                                                         </svg>
                                                     </div>
-                                                    <input id="upload-profile-photo" class="d-none" type="file">
+                                                    <input id="upload-profile-photo" class="d-none" type="file" onchange="uploadAvatar();">
                                                     <label class="stretched-label mb-0"
                                                         for="upload-profile-photo"></label>
                                                 </div>
@@ -3879,8 +3882,8 @@
                         </div>
 
                         <div class="profile-body">
-                            <div class="avatar avatar-xl">
-                                <img class="avatar-img" src="assets/img/avatars/1.jpg" alt="#">
+                            <div class="avatar avatar-xl" id="myprofileavatar">
+                                <span class="avatar-text">-</span>
                             </div>
 
                             <h4 class="mb-1">William Wright</h4>

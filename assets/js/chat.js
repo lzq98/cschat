@@ -11,8 +11,7 @@ $(document).ready(function () {
         });
         friends
     })
-    $("#myAvatarSm").empty();
-    $("#myAvatarSm").append(getAvatarHtml(myinfo));
+    loadAvatar();
     currentUser = -1;
     currentRelation = -1;
     currentPublicKey = "";
@@ -163,7 +162,7 @@ function showChatCard(friend) {
                 plaintext = decodeURI(result.plaintext);
             }
         }
-    }else{
+    } else {
         plaintext = "[No message]";
     }
 
@@ -209,7 +208,8 @@ function getAvatarHtml(info) {
         $avatarHtml = $('<span class="avatar-text">' + getDisplayName(info).charAt(0) + '</span>');
     } else {
         $avatarHtml = $('<img alt="#" class="avatar-img">');
-        //$avatarimg.attr('src', contactinfo['avatar']);
+        var src = "/upload/img/avatar/" + info["avatar"];
+        $avatarHtml.attr('src', src);
     }
     return $avatarHtml;
 }
@@ -326,6 +326,38 @@ function retrieveNewMessage() {
             document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight, behavior: 'smooth' });
         });
     })
+}
+
+function uploadAvatar() {
+    var formData = new FormData();
+    formData.append('image', $('#upload-profile-photo')[0].files[0]);
+    $.ajax({
+        url: "/api/uploadavatar.php",
+        data: formData,
+        type: "POST",
+        dataType: "json",
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+            if (response["status"] == "success") {
+                myinfo['avatar'] = response["avatar"];
+                localStorage.setItem("info", JSON.stringify(myinfo));
+                loadAvatar()  // reload my avatar
+            }
+        },
+        failure: function (res) {
+            alert("Error uploading avatar");
+        }
+    })
+}
+
+function loadAvatar() {
+    var avatarlistbyid = ["#myAvatarSm", "#navbar-avatar-desktop", "#navbar-avatar-mobile", "#myprofileavatar", "#settings-avatar"];
+    avatarlistbyid.forEach(function (avatarid) {    
+        $(avatarid).empty();
+        $(avatarid).append(getAvatarHtml(myinfo));
+    });
 }
 ////////////////////////////////////////////////////////////////////////
 // test only functions
