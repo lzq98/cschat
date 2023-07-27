@@ -2177,31 +2177,30 @@
                                                         <div class="accordion-body">
                                                             <div class="form-floating mb-6">
                                                                 <input type="text" class="form-control"
+                                                                    id="profile-uname" placeholder="Username">
+                                                                <label for="profile-uname">Username</label>
+                                                            </div>
+
+                                                            <div class="form-floating mb-6">
+                                                                <input type="text" class="form-control"
                                                                     id="profile-name" placeholder="Name">
                                                                 <label for="profile-name">Name</label>
                                                             </div>
 
                                                             <div class="form-floating mb-6">
                                                                 <input type="email" class="form-control"
-                                                                    id="profile-email" placeholder="Email address">
+                                                                    id="profile-email" placeholder="Email address" onfocusout="checkEmail()">
                                                                 <label for="profile-email">Email</label>
                                                             </div>
 
                                                             <div class="form-floating mb-6">
                                                                 <input type="text" class="form-control"
-                                                                    id="profile-phone" placeholder="Phone">
+                                                                    id="profile-phone" placeholder="Phone" onfocusout="checkPhone()">
                                                                 <label for="profile-phone">Phone</label>
                                                             </div>
 
-                                                            <div class="form-floating mb-6">
-                                                                <textarea class="form-control" placeholder="Bio"
-                                                                    id="profile-bio" data-autosize="true"
-                                                                    style="min-height: 120px;"></textarea>
-                                                                <label for="profile-bio">Bio</label>
-                                                            </div>
-
                                                             <button type="button"
-                                                                class="btn btn-block btn-lg btn-primary w-100">Save</button>
+                                                                class="btn btn-block btn-lg btn-primary w-100" onclick="updateinfo()">Save</button>
                                                         </div>
                                                     </div>
                                                 </div>

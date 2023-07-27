@@ -375,7 +375,58 @@ function loadMyInfo() {
     $("#myprofileuname").text(myinfo['uname']);
     $("#settings-name").text(getDisplayName(myinfo));
     $("#settings-email").text(myinfo['email']);
+    $("#profile-uname").val(myinfo['uname']);
+    $("#profile-name").val(myinfo['name']);
+    $("#profile-email").val(myinfo['email']);
+    $("#profile-phone").val(myinfo['phone']);
+}
 
+function updateinfo() {
+    if (checkEmail() && checkPhone()) {
+        var uname = $("#profile-uname").val();
+        var name = $("#profile-name").val();
+        var email = $("#profile-email").val();
+        var phone = $("#profile-phone").val();
+
+        $.post("/api/updateinfo.php", { uname: uname, name: name, email: email, phone: phone}).then(function (response) {
+            r = JSON.parse(response);
+            if (r["success"]) {
+                // update my info
+                myinfo["uname"] = uname;
+                myinfo["name"] = name;
+                myinfo["email"] = email;
+                myinfo["phone"] = phone;
+                localStorage.setItem("info", JSON.stringify(myinfo));
+                loadMyInfo();
+            } else {
+                alert(r["error"]);
+            }
+        })
+    }
+}
+
+function checkEmail() {
+    var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    var input = document.getElementById("profile-email").value;
+    if (input.match(validRegex)) {
+        $("#profile-email").removeClass("is-invalid");
+        return true;
+    } else {
+        $("#profile-email").addClass("is-invalid");
+        return false;
+    }
+}
+
+function checkPhone() {
+    var validRegex = /^[0-9]{9,10}$/;
+    var input = document.getElementById("profile-phone").value;
+    if (input.match(validRegex) || input == "") {
+        $("#profile-phone").removeClass("is-invalid");
+        return true;
+    } else {
+        $("#profile-phone").addClass("is-invalid");
+        return false;
+    }
 }
 ////////////////////////////////////////////////////////////////////////
 // test only functions
