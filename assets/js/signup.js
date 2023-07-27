@@ -43,12 +43,12 @@ function checkAll() {
 
 function signup() {
     if (checkAll()) {
-        var name = $("#signup-name").val();
+        var uname = $("#signup-uname").val();
         var email = $("#signup-email").val();
         var passwordPlain = $("#signup-password").val();
         var publickey = cryptico.publicKeyString(cryptico.generateRSAKey(passwordPlain, 1024));
         hash(passwordPlain).then((digestHex) =>
-            $.post("/api/signup.php", { name:name, email: email, password: digestHex, publickey: publickey}, function (result) {
+            $.post("/api/signup.php", { uname:uname, email: email, password: digestHex, publickey: publickey}, function (result) {
                 r = JSON.parse(result);
                 if (r["success"]) {
                     window.location.replace("/signin.html");

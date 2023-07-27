@@ -1,7 +1,7 @@
 <?php
 include "./include/db.php";
 // $conn for established mysql connections
-$name = $_POST['name'];
+$uname = $_POST['uname'];
 $email = $_POST['email'];
 $password = $_POST['password'];
 $publickey = $_POST['publickey'];
@@ -31,21 +31,22 @@ if (!preg_match("/^[0-9a-fA-F]*$/", $password) || strlen($password) != 64) {
     echo json_encode($obj);
     exit();
 }
-$name = htmlentities($name);
+$uname = htmlentities($uname);
 $email = strtolower(htmlentities($email));
 $password = htmlentities($password);
 $publickey = htmlentities($publickey);
 
 $query = sprintf(
-    "SELECT email FROM user WHERE email='%s'",
-    mysqli_real_escape_string($conn, $email)
+    "SELECT email FROM user WHERE email='%s' OR uname='%s'",
+    mysqli_real_escape_string($conn, $email),
+    mysqli_real_escape_string($conn, $uname)
 ); // generate query string with SQL injection protection
 $result = $conn->query($query);
 if ($result->num_rows === 0) {
     $query = sprintf(
         "INSERT INTO `user` (`password`, `uname`, `email`, `publicKey`) VALUES ('%s', '%s', '%s', '%s')",
         mysqli_real_escape_string($conn, $password),
-        mysqli_real_escape_string($conn, $name),
+        mysqli_real_escape_string($conn, $uname),
         mysqli_real_escape_string($conn, $email),
         mysqli_real_escape_string($conn, $publickey),
     );
@@ -62,7 +63,7 @@ if ($result->num_rows === 0) {
 } else if ($result->num_rows >= 0) {
     $obj = new stdClass();
     $obj->success = false;
-    $obj->error = "Email already exists";
+    $obj->error = "Email or username already exists";
     echo json_encode($obj);
 } else {
     $obj = new stdClass();

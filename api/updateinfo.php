@@ -29,16 +29,34 @@ $name = htmlentities($name);
 $email = strtolower(htmlentities($email));
 
 $query = sprintf(
-    "UPDATE `user` SET `uname` = '%s', `name` = '%s', `email` = '%s', `phone` = '%s' WHERE `uid` = %s",
-    mysqli_real_escape_string($conn, $uname),
-    mysqli_real_escape_string($conn, $name),
+    "SELECT email FROM user WHERE email='%s' OR uname='%s'",
     mysqli_real_escape_string($conn, $email),
-    $phone,
-    $_SESSION['uid']
-);
-if ($conn->query($query) === TRUE) {
+    mysqli_real_escape_string($conn, $uname)
+); // generate query string with SQL injection protection
+$result = $conn->query($query);
+if ($result->num_rows === 0) {
+    $query = sprintf(
+        "UPDATE `user` SET `uname` = '%s', `name` = '%s', `email` = '%s', `phone` = '%s' WHERE `uid` = %s",
+        mysqli_real_escape_string($conn, $uname),
+        mysqli_real_escape_string($conn, $name),
+        mysqli_real_escape_string($conn, $email),
+        $phone,
+        $_SESSION['uid']
+    );
+    if ($conn->query($query) === TRUE) {
+        $obj = new stdClass();
+        $obj->success = true;
+        echo json_encode($obj);
+    } else {
+        $obj = new stdClass();
+        $obj->success = false;
+        $obj->error = "Unknown error, please contact costomer service";
+        echo json_encode($obj);
+    }
+} else if ($result->num_rows >= 0) {
     $obj = new stdClass();
-    $obj->success = true;
+    $obj->success = false;
+    $obj->error = "Email or username already exists";
     echo json_encode($obj);
 } else {
     $obj = new stdClass();
