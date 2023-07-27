@@ -308,6 +308,7 @@ function uploadMessage(plaintext, type) {
                 currentLastMessageId = sendresult['id']
                 console.log("send success");
                 $("#chatbox").append(htmlNewText(plaintext, new Date(), 0));
+                $("#emptyNotify").prop("hidden", "hidden");
                 document.getElementById("chatbody").scroll({ top: chatbody.scrollHeight, behavior: 'smooth' });
             }
         })
@@ -354,7 +355,7 @@ function uploadAvatar() {
 
 function loadAvatar() {
     var avatarlistbyid = ["#myAvatarSm", "#navbar-avatar-desktop", "#navbar-avatar-mobile", "#myprofileavatar", "#settings-avatar"];
-    avatarlistbyid.forEach(function (avatarid) {    
+    avatarlistbyid.forEach(function (avatarid) {
         $(avatarid).empty();
         $(avatarid).append(getAvatarHtml(myinfo));
     });
