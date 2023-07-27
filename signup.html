@@ -44,15 +44,22 @@
 
                                 <div class="col-12">
                                     <div class="form-floating">
-                                        <input type="email" class="form-control" id="signup-email" placeholder="Email">
+                                        <input type="email" class="form-control" id="signup-email" placeholder="Email" onfocusout="checkEmail();">
                                         <label for="signup-email">Email</label>
                                     </div>
                                 </div>
 
                                 <div class="col-12">
                                     <div class="form-floating">
-                                        <input type="password" class="form-control" id="signup-password" placeholder="Password">
+                                        <input type="password" class="form-control" id="signup-password" placeholder="Password" onfocusout="checkPassword();">
                                         <label for="signup-password">Password</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12" id="retype-password">
+                                    <div class="form-floating">
+                                        <input type="password" class="form-control" id="signup-password-retype" placeholder="Retype Password" disabled onfocusout="checkRetype();">
+                                        <label for="signup-password">Retype Password</label>
                                     </div>
                                 </div>
 
@@ -73,8 +80,16 @@
         </div>
 
         <!-- Scripts -->
+        <script language="JavaScript" type="text/javascript" src="assets/vendor/jquery/jquery.min.js"></script>
         <script src="assets/js/vendor.js"></script>
         <script src="assets/js/template.js"></script>
+        <script language="JavaScript" type="text/javascript" src="assets/vendor/cryptico/jsbn.js"></script>
+        <script language="JavaScript" type="text/javascript" src="assets/vendor/cryptico/random.js"></script>
+        <script language="JavaScript" type="text/javascript" src="assets/vendor/cryptico/hash.js"></script>
+        <script language="JavaScript" type="text/javascript" src="assets/vendor/cryptico/rsa.js"></script>
+        <script language="JavaScript" type="text/javascript" src="assets/vendor/cryptico/aes.js"></script>
+        <script language="JavaScript" type="text/javascript" src="assets/vendor/cryptico/api.js"></script>
+        <script src="assets/js/signup.js"></script>
     </body>
 
 <!-- Mirrored from offsetcode.com/themes/messenger/2.1.0/light/signup.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 01 Feb 2022 12:21:19 GMT -->
