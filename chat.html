@@ -2103,7 +2103,7 @@
                                                     <div class="avatar" id="settings-avatar">
                                                         <span class="avatar-text">-</span>
                                                     </div>
-                                                    
+
 
                                                     <div
                                                         class="badge badge-circle bg-secondary border-outline position-absolute bottom-0 end-0">
@@ -2117,14 +2117,15 @@
                                                             <polyline points="21 15 16 10 5 21"></polyline>
                                                         </svg>
                                                     </div>
-                                                    <input id="upload-profile-photo" class="d-none" type="file" onchange="uploadAvatar();">
+                                                    <input id="upload-profile-photo" class="d-none" type="file"
+                                                        onchange="uploadAvatar();">
                                                     <label class="stretched-label mb-0"
                                                         for="upload-profile-photo"></label>
                                                 </div>
                                             </div>
                                             <div class="col">
-                                                <h5>William Pearson</h5>
-                                                <p>wright@studio.com</p>
+                                                <h5 id="settings-name">-</h5>
+                                                <p id="settings-email">-</p>
                                             </div>
                                             <div class="col-auto">
                                                 <a href="#" class="text-muted">
@@ -2682,7 +2683,7 @@
                     <!-- Chat: Content -->
                     <div class="chat-body hide-scrollbar flex-1 h-100" id="chatbody">
                         <div class="chat-body-inner">
-                            
+
                             <div class="py-6 py-lg-12" id="chatbox">
 
                             </div>
@@ -3886,8 +3887,8 @@
                                 <span class="avatar-text">-</span>
                             </div>
 
-                            <h4 class="mb-1">William Wright</h4>
-                            <p>last seen 5 minutes ago</p>
+                            <h4 class="mb-1" id="myprofilename">-</h4>
+                            <p id="myprofileuname">-</p>
                         </div>
                     </div>
                     <!-- Header -->
@@ -3900,7 +3901,7 @@
                             <div class="row align-items-center gx-6">
                                 <div class="col">
                                     <h5>Location</h5>
-                                    <p>USA, Houston</p>
+                                    <p id="myprofilelocation">Australia, Adelaide</p>
                                 </div>
 
                                 <div class="col-auto">
@@ -3924,7 +3925,7 @@
                             <div class="row align-items-center gx-6">
                                 <div class="col">
                                     <h5>E-mail</h5>
-                                    <p>william@studio.com</p>
+                                    <p id="myprofileemail"></p>
                                 </div>
 
                                 <div class="col-auto">
@@ -3946,7 +3947,7 @@
                             <div class="row align-items-center gx-6">
                                 <div class="col">
                                     <h5>Phone</h5>
-                                    <p>1-800-275-2273</p>
+                                    <p id="myprofilephone">1-800-275-2273</p>
                                 </div>
 
                                 <div class="col-auto">
@@ -4050,22 +4051,12 @@
                         </div>
 
                         <div class="profile-body">
-                            <div class="avatar avatar-xl">
-                                <img class="avatar-img" src="assets/img/avatars/9.jpg" alt="#">
-
-                                <a href="#"
-                                    class="badge badge-lg badge-circle bg-primary text-white border-outline position-absolute bottom-0 end-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="feather feather-plus">
-                                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    </svg>
-                                </a>
+                            <div class="avatar avatar-xl" id="currentcontactprofileavatar">
+                                <span class="avatar-text">?</span>
                             </div>
 
-                            <h4 class="mb-1">William Wright</h4>
-                            <p>last seen 5 minutes ago</p>
+                            <h4 class="mb-1" id="currentcontactprofilename">-</h4>
+                            <p id="currentcontactprofileuname">-</p>
                         </div>
                     </div>
                     <!-- Header -->
@@ -4078,7 +4069,7 @@
                             <div class="row align-items-center gx-6">
                                 <div class="col">
                                     <h5>Location</h5>
-                                    <p>USA, Houston</p>
+                                    <p id="currentcontactprofileuname">Australia, Adelaide</p>
                                 </div>
 
                                 <div class="col-auto">
@@ -4102,7 +4093,7 @@
                             <div class="row align-items-center gx-6">
                                 <div class="col">
                                     <h5>E-mail</h5>
-                                    <p>william@studio.com</p>
+                                    <p id="currentcontactprofileemail">-</p>
                                 </div>
 
                                 <div class="col-auto">
@@ -4124,7 +4115,7 @@
                             <div class="row align-items-center gx-6">
                                 <div class="col">
                                     <h5>Phone</h5>
-                                    <p>1-800-275-2273</p>
+                                    <p id="currentcontactprofilephone">-</p>
                                 </div>
 
                                 <div class="col-auto">

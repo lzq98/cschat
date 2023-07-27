@@ -11,6 +11,7 @@ $(document).ready(function () {
         });
         friends
     })
+    loadMyInfo();
     loadAvatar();
     currentUser = -1;
     currentRelation = -1;
@@ -243,10 +244,16 @@ function selectContact(uid) {
     $("#currentContactAvatar").append(getAvatarHtml(friends[uid]['info']));
     $("#currentContactAvatarSm").empty();
     $("#currentContactAvatarSm").append(getAvatarHtml(friends[uid]['info']));
+    $("#currentcontactprofileavatar").empty();
+    $("#currentcontactprofileavatar").append(getAvatarHtml(friends[uid]['info']));
     loadChatHistory(uid);
     if (getNewMessageIntervalId == 0) {
         getNewMessageIntervalId = setInterval("retrieveNewMessage()", 1000);
     }
+    $("#currentcontactprofileemail").text(friends[uid]['info']['email']);
+    $("#currentcontactprofilephone").text(friends[uid]['info']['phone']);
+    $("#currentcontactprofilename").text(getDisplayName(friends[uid]['info']));
+    $("#currentcontactprofileuname").text(friends[uid]['info']['uname']);
 }
 
 function loadChatHistory(uid) {
@@ -359,6 +366,16 @@ function loadAvatar() {
         $(avatarid).empty();
         $(avatarid).append(getAvatarHtml(myinfo));
     });
+}
+
+function loadMyInfo() {
+    $("#myprofileemail").text(myinfo['email']);
+    $("#myprofilephone").text(myinfo['phone']);
+    $("#myprofilename").text(getDisplayName(myinfo));
+    $("#myprofileuname").text(myinfo['uname']);
+    $("#settings-name").text(getDisplayName(myinfo));
+    $("#settings-email").text(myinfo['email']);
+
 }
 ////////////////////////////////////////////////////////////////////////
 // test only functions
