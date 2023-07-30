@@ -2128,7 +2128,7 @@
                                                 <p id="settings-email">-</p>
                                             </div>
                                             <div class="col-auto">
-                                                <a href="#" class="text-muted">
+                                                <a href="#" class="text-muted" onclick="signout()">
                                                     <div class="icon">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -2189,18 +2189,21 @@
 
                                                             <div class="form-floating mb-6">
                                                                 <input type="email" class="form-control"
-                                                                    id="profile-email" placeholder="Email address" onfocusout="checkEmail()">
+                                                                    id="profile-email" placeholder="Email address"
+                                                                    onfocusout="checkEmail()">
                                                                 <label for="profile-email">Email</label>
                                                             </div>
 
                                                             <div class="form-floating mb-6">
                                                                 <input type="text" class="form-control"
-                                                                    id="profile-phone" placeholder="Phone" onfocusout="checkPhone()">
+                                                                    id="profile-phone" placeholder="Phone"
+                                                                    onfocusout="checkPhone()">
                                                                 <label for="profile-phone">Phone</label>
                                                             </div>
 
                                                             <button type="button"
-                                                                class="btn btn-block btn-lg btn-primary w-100" onclick="updateinfo()">Save</button>
+                                                                class="btn btn-block btn-lg btn-primary w-100"
+                                                                onclick="updateinfo()">Save</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -3999,7 +4002,7 @@
                         </li>
 
                         <li class="list-group-item">
-                            <a href="#" class="text-danger">Logout</a>
+                            <a href="#" class="text-danger" onclick="signout()">Logout</a>
                         </li>
                     </ul>
                     <!-- List -->

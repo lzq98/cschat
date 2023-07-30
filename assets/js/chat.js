@@ -388,7 +388,7 @@ function updateinfo() {
         var email = $("#profile-email").val();
         var phone = $("#profile-phone").val();
 
-        $.post("/api/updateinfo.php", { uname: uname, name: name, email: email, phone: phone}).then(function (response) {
+        $.post("/api/updateinfo.php", { uname: uname, name: name, email: email, phone: phone }).then(function (response) {
             r = JSON.parse(response);
             if (r["success"]) {
                 // update my info
@@ -428,10 +428,15 @@ function checkPhone() {
         return false;
     }
 }
-////////////////////////////////////////////////////////////////////////
-// test only functions
 
-function decryptMessage(cipher) {
-    var result = cryptico.decrypt(cipher, mykey);
-
+function signout() {
+    $.post("/api/signout.php").then(function (response) {
+        r = JSON.parse(response);
+        if (r["success"]) {
+            localStorage.clear();
+            window.location.replace("/signin.html");
+        } else {
+            alert(r["Please try again or refresh the webpage"]);
+        }
+    })
 }
