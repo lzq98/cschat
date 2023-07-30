@@ -29,34 +29,44 @@ $name = htmlentities($name);
 $email = strtolower(htmlentities($email));
 
 $query = sprintf(
-    "SELECT email FROM user WHERE email='%s' OR uname='%s'",
+    "SELECT uid FROM user WHERE email='%s' OR uname='%s' OR phone='%s'",
     mysqli_real_escape_string($conn, $email),
-    mysqli_real_escape_string($conn, $uname)
+    mysqli_real_escape_string($conn, $uname),
+    $phone
 ); // generate query string with SQL injection protection
 $result = $conn->query($query);
-if ($result->num_rows === 0) {
-    $query = sprintf(
-        "UPDATE `user` SET `uname` = '%s', `name` = '%s', `email` = '%s', `phone` = '%s' WHERE `uid` = %s",
-        mysqli_real_escape_string($conn, $uname),
-        mysqli_real_escape_string($conn, $name),
-        mysqli_real_escape_string($conn, $email),
-        $phone,
-        $_SESSION['uid']
-    );
-    if ($conn->query($query) === TRUE) {
-        $obj = new stdClass();
-        $obj->success = true;
-        echo json_encode($obj);
-    } else {
+
+// only one match, but not the current user
+if ($result->num_rows == 1) {
+    if ($result->fetch_assoc()['uid'] != $_SESSION['uid']) {
         $obj = new stdClass();
         $obj->success = false;
-        $obj->error = "Unknown error, please contact costomer service";
+        $obj->error = "Username/email/phone already exists";
         echo json_encode($obj);
+        exit();
     }
-} else if ($result->num_rows >= 0) {
+}
+
+// multiple match
+if ($result->num_rows > 1) {
     $obj = new stdClass();
     $obj->success = false;
-    $obj->error = "Email or username already exists";
+    $obj->error = "Username/email/phone already exists";
+    echo json_encode($obj);
+    exit();
+}
+
+$query = sprintf(
+    "UPDATE `user` SET `uname` = '%s', `name` = '%s', `email` = '%s', `phone` = '%s' WHERE `uid` = %s",
+    mysqli_real_escape_string($conn, $uname),
+    mysqli_real_escape_string($conn, $name),
+    mysqli_real_escape_string($conn, $email),
+    $phone,
+    $_SESSION['uid']
+);
+if ($conn->query($query) === TRUE) {
+    $obj = new stdClass();
+    $obj->success = true;
     echo json_encode($obj);
 } else {
     $obj = new stdClass();
