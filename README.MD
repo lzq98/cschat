@@ -54,6 +54,7 @@ The encryption API is using [wwwtyro/cryptico](https://github.com/wwwtyro/crypti
 - Encryption
   - Encrypt/decrypt multimedia messages
 - Messages
+  - New message notifications
   - Multimedia (image/audio/video)
 - UI
   - Bug fix
