@@ -15,7 +15,9 @@ The encryption API is using [wwwtyro/cryptico](https://github.com/wwwtyro/crypti
 - Webserver  
   You can choose any webserver which includes PHP, eg. Nginx with PHP or Apache. Put all files under the webserver's web directory and you are good to go.
   - Notice  
-  The sign in function uses `SubtleCrypto.digest()`, it requires secure network environment to work. Which means it only works on HTTPS or localhost.
+  The sign in function uses `SubtleCrypto.digest()`, it requires secure network environment to work. Which means it only works on HTTPS or localhost.  
+  Grant read and write access to upload directory  
+  Do not put db.sql in your web server.
 
 ## Working functions
 - Basic functions
@@ -40,11 +42,10 @@ The encryption API is using [wwwtyro/cryptico](https://github.com/wwwtyro/crypti
   - Mobile version compatable
 ## Todo list
 - Basic functions
-  - Sign in
-  - Sign out
+  - Web page auto jumping
+  - Multidevice session management
 - Account
   - Store/modify detail profiles
-  - Multidevice session management
 - Contacts
   - Friends requests
   - Display contact list
