@@ -5,12 +5,14 @@ CSCHAT is an end-to-end encrypted chat platform, provides a secure and easy to u
 Messages are encrypted at the frontend, the encryption is based on RSA, only the public key will be stored on the server and visible for you contacts. Private keys will be generated at sign in.  
 The encryption API is using [wwwtyro/cryptico](https://github.com/wwwtyro/cryptico)
 ## Deployment
-- Database
+- Database  
   Database structure: `./db.sql`
   - Import databse  
-  This project is developed on MySQL, using PHPMyAdmin to export the database structure. You can use any other database management software to import the database.
+  This project is developed on MySQL, using PHPMyAdmin to export the database structure.  
+  Create a new database in your MySQL server.  
+  You can use any other database management software to import the database.
   - Database user settings  
-  Create a new user or use existing user for CSCHAT, grant SELECT, INSERT, UPDATE and DELETE privileges to that user.  
+  Create a new user or use existing user for CSCHAT, grant SELECT, INSERT, UPDATE and DELETE privileges to that user on the database created before.  
   Modify `./api/include/dbdetails.php` according to the account.
 - Webserver  
   You can choose any webserver which includes PHP, eg. Nginx with PHP or Apache. Put all files under the webserver's web directory and you are good to go.
